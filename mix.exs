@@ -3,11 +3,14 @@ defmodule Versionary.Mixfile do
 
   def project do
     [app: :versionary,
+     name: "Versionary",
+     description: "Elixir plug for handling API versioning",
      version: "0.1.0",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps()]
+     deps: deps(),
+     package: package()]
   end
 
   # Configuration for the OTP application
@@ -31,5 +34,13 @@ defmodule Versionary.Mixfile do
     [{:plug, "~> 1.3"},
      # dev
      {:ex_doc, ">= 0.0.0", only: :dev}]
+  end
+
+  defp package do
+    [maintainers: ["Anthony Smith"],
+     licenses: ["MIT"],
+     links: %{
+       GitHub: "https://github.com/sticksnleaves/versionary"
+      }]
   end
 end
