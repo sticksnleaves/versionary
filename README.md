@@ -2,6 +2,8 @@
 
 Add versioning to your Elixir Plug and Phoenix built API's
 
+[![Build Status](https://travis-ci.org/sticksnleaves/versionary.svg?branch=master)](https://travis-ci.org/sticksnleaves/versionary)
+
 ## Installation
 
 The package can be installed by adding `versionary` to your list of dependencies
