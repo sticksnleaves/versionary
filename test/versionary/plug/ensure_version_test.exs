@@ -22,7 +22,7 @@ defmodule Versionary.Plug.EnsureVersionTest do
     assert @opts[:handler] == TestHandler
   end
 
-  test "init/1 sets the default handler is a module is not passed in" do
+  test "init/1 sets the default handler if a value is not passed in" do
     opts = EnsureVersion.init()
 
     assert opts[:handler] == Versionary.Plug.ErrorHandler
