@@ -11,6 +11,18 @@ defmodule Versionary.Plug.VerifyHeaderTest do
   @opts2 VerifyHeader.init([header: "x-version", versions: [@v1]])
   @opts3 VerifyHeader.init([versions: [@v1, @v2]])
 
+  test "init/1 sets the header option to the value passed in" do
+    assert @opts2[:header] == "x-version"
+  end
+
+  test "init/1 sets the default header if a value is not passed in" do
+    assert @opts1[:header] == "accept"
+  end
+
+  test "init/1 sets the versions option to the value passed in" do
+    assert @opts1[:versions] == [@v1]
+  end
+
   test "verification fails if version is not present" do
     conn = conn(:get, "/") |> VerifyHeader.call(@opts1)
 
