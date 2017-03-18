@@ -11,7 +11,13 @@ defmodule Versionary.Mixfile do
      start_permanent: Mix.env == :prod,
      deps: deps(),
      package: package(),
-     preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test],
+     preferred_cli_env: [
+       "coveralls": :test,
+       "coveralls.detail": :test,
+       "coveralls.html": :test,
+       "coveralls.post": :test,
+       "coveralls.travis": :test
+      ],
      test_coverage: [tool: ExCoveralls]]
   end
 
