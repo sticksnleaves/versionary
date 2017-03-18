@@ -10,7 +10,9 @@ defmodule Versionary.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps(),
-     package: package()]
+     package: package(),
+     preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test],
+     test_coverage: [tool: ExCoveralls]]
   end
 
   # Configuration for the OTP application
@@ -33,7 +35,9 @@ defmodule Versionary.Mixfile do
   defp deps do
     [{:plug, "~> 1.3"},
      # dev
-     {:ex_doc, ">= 0.0.0", only: :dev}]
+     {:ex_doc, ">= 0.0.0", only: :dev},
+     # test
+     {:excoveralls, "~> 0.6.0", only: :test}]
   end
 
   defp package do
