@@ -28,6 +28,8 @@ defmodule Versionary.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:plug, "~> 1.3"}]
+    [{:plug, "~> 1.3"},
+     # dev
+     {:ex_doc, ">= 0.0.0", only: :dev}]
   end
 end
