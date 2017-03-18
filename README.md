@@ -3,6 +3,7 @@
 Add versioning to your Elixir Plug and Phoenix built API's
 
 [![Build Status](https://travis-ci.org/sticksnleaves/versionary.svg?branch=master)](https://travis-ci.org/sticksnleaves/versionary)
+[![Coverage Status](https://coveralls.io/repos/github/sticksnleaves/versionary/badge.svg?branch=master)](https://coveralls.io/github/sticksnleaves/versionary?branch=master)
 
 ## Installation
 
