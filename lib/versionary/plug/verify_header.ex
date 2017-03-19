@@ -2,6 +2,9 @@ defmodule Versionary.Plug.VerifyHeader do
   @moduledoc """
   Use this plug to verify a version string in the header.
 
+  If multiple versions are passed to this plug and at last one matches the
+  version will be considered valid.
+
   ## Example
 
   ```
