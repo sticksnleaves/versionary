@@ -43,7 +43,7 @@ defmodule Versionary.Mixfile do
      # dev
      {:ex_doc, ">= 0.0.0", only: :dev},
      # test
-     {:excoveralls, "~> 0.6.0", only: :test}]
+     {:excoveralls, "~> 0.6.0", only: :test, runtime: false}]
   end
 
   defp package do
