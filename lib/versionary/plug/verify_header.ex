@@ -4,18 +4,27 @@ defmodule Versionary.Plug.VerifyHeader do
 
   ## Example
 
-    plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
+  ```
+  plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
+  ```
+
+  By default, this plug will look at the `Accept` header for the version string
+  to verify against. If you'd like to verify against another header specify the
+  header you'd like to verify against in the `header` option.
 
   ## Example
 
-    plug Versionary.Plug.VerifyHeader, header: "accept",
-                                       versions: ["application/vnd.app.v1+json"]
+  ```
+  plug Versionary.Plug.VerifyHeader, header: "accept",
+                                     versions: ["application/vnd.app.v1+json"]
+  ```
   """
 
   import Plug.Conn
 
   @default_header_opt "accept"
 
+  @doc false
   def init(opts) do
     %{
       header: opts[:header] || @default_header_opt,
@@ -23,6 +32,7 @@ defmodule Versionary.Plug.VerifyHeader do
     }
   end
 
+  @doc false
   def call(conn, opts) do
     conn
     |> verify_version(opts)
