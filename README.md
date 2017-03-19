@@ -16,48 +16,45 @@ def deps do
 end
 ```
 
-## Plug API
-
-Versionary is a set of plugs which can be used to verify the requested version
-of your API.
-
-### Versionary.Plug.VerifyHeader
-
-Looks for a version in the `Accept` header.
+## Usage
 
 ```elixir
-defmodule MyAPI.MyController do
+def MyAPI.MyController do
   use MyAPI.Web, :controller
 
   plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
-end
-```
-
-It's possible to expect another header to contain the versioning information.
-You can specify this using the `header` option.
-
-```elixir
-defmodule MyAPI.MyController do
-  use MyAPI.Web, :controller
-
-  plug Versionary.Plug.VerifyHeader, header: "x-version",
-                                     versions: ["application/vnd.app.v1+json"]
-end
-```
-
-### Versionary.Plug.EnsureVersion
-
-Looks for a verified version. If one is found, it continues, otherwise the
-request is halted and a `call/1` is made to a supplied handler.
-
-```elixir
-defmodule MyAPI.MyController do
-  use MyAPI.Web, :controller
 
   plug Versionary.Plug.EnsureVersion, handler: MyAPI.MyErrorHandler
 end
 ```
 
-If a handler is not supplied a default handler will be used.
+## Plug API
 
-The failure handler must receive the connection.
+### [Versionary.Plug.VerifyHeader](https://hexdocs.pm/versionary/Versionary.Plug.VerifyHeader.html)
+
+Verify that the version passed in to the request as a header is valid. If the
+version is not valid then the request will be flagged.
+
+This plug will not handle an invalid version.
+
+#### Options
+
+`versions` - a list of strings representing valid versions. If at least one of
+the provided versions is valid then the request is considered valid.
+
+`header` - the header used to provide the requested version (Default: `Accept`)
+
+### [Versionary.Plug.EnsureVersion](https://hexdocs.pm/versionary/Versionary.Plug.EnsureVersion.html)
+
+Checks to see if the request has been flagged with a valid version. If the
+version is valid, the request continues, otherwise the request will halt and the
+handler will be called to process the request.
+
+#### Options
+
+`handler` - the module used handle a request with an invalid version (Default: [Versionary.Plug.ErrorHandler](https://hexdocs.pm/versionary/Versionary.Plug.ErrorHandler.html))
+
+### [Versionary.Plug.Handler](https://hexdocs.pm/versionary/Versionary.Plug.Handler.html)
+
+behaviour for handling requests with invalid versions. You can create your own
+custom handler with this behaviour.
