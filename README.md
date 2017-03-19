@@ -56,5 +56,5 @@ handler will be called to process the request.
 
 ### [Versionary.Plug.Handler](https://hexdocs.pm/versionary/Versionary.Plug.Handler.html)
 
-behaviour for handling requests with invalid versions. You can create your own
+Behaviour for handling requests with invalid versions. You can create your own
 custom handler with this behaviour.
