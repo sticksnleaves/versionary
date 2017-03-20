@@ -7,24 +7,53 @@ defmodule Versionary.Plug.EnsureVersionTest do
   alias Versionary.Plug.EnsureVersion
   alias Versionary.Plug.VerifyHeader
 
-  defmodule TestHandler do
+  defmodule TestHandler1 do
     @moduledoc false
 
     def call(conn) do
       conn
-      |> Plug.Conn.assign(:versionary_spec, :not_supported)
+      |> Plug.Conn.assign(:versionary_spec, :test_handler_1)
       |> Plug.Conn.send_resp(406, "Not Supported")
     end
+  end
+
+  defmodule TestHandler2 do
+    @moduledoc false
+
+    def call(conn) do
+      conn
+      |> Plug.Conn.assign(:versionary_spec, :test_handler_2)
+      |> Plug.Conn.send_resp(406, "Not Supported")
+    end
+  end
+
+  defmodule TestRouter do
+    @moduledoc false
+
+    use Plug.Router
+
+    plug VerifyHeader, versions: ["application/vnd.app.v1+json"]
+
+    plug EnsureVersion, handler: TestHandler1,
+                        versions: ["application/vnd.app.v2+json"]
+
+    # default handler
+    plug EnsureVersion, handler: TestHandler2
+
+    plug :dispatch
+    plug :match
+
+    match _, do: send_resp(conn, 404, "Not Found")
   end
 
   @v1 "application/vnd.app.v1+json"
   @v2 "application/vnd.app.v2+json"
 
-  @opts EnsureVersion.init([handler: TestHandler])
+  @opts EnsureVersion.init([handler: TestHandler1])
 
   describe "init/1" do
     test "sets the handler option to the module that's passed in" do
-      assert @opts[:handler] == TestHandler
+      assert @opts[:handler] == TestHandler1
     end
 
     test "sets the default handler if a value is not passed in" do
@@ -76,7 +105,33 @@ defmodule Versionary.Plug.EnsureVersionTest do
         |> VerifyHeader.call(VerifyHeader.init(versions: [@v1]))
         |> EnsureVersion.call(@opts)
 
-      assert conn.assigns[:versionary_spec] == :not_supported
+      assert conn.assigns[:versionary_spec] == :test_handler_1
+    end
+
+    test "handle is called for a specific version" do
+      conn =
+        conn(:get, "/")
+        |> Plug.Conn.put_req_header("accept", @v2)
+        |> TestRouter.call(TestRouter.init([]))
+
+      assert conn.assigns[:versionary_spec] == :test_handler_1
+    end
+
+    test "default handler is called for non-specific version" do
+      conn =
+        conn(:get, "/")
+        |> Plug.Conn.put_req_header("accept", "application/unspecific")
+        |> TestRouter.call(TestRouter.init([]))
+
+      assert conn.assigns[:versionary_spec] == :test_handler_2
+    end
+
+    test "default handler is called when no version is supplied" do
+      conn =
+        conn(:get, "/")
+        |> TestRouter.call(TestRouter.init([]))
+
+      assert conn.assigns[:versionary_spec] == :test_handler_2
     end
   end
 end
