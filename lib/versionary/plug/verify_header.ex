@@ -52,8 +52,10 @@ defmodule Versionary.Plug.VerifyHeader do
 
   defp validate_version(conn, opts) do
     version = get_version(conn, opts)
-    verified = Enum.member?(opts[:versions], version)
 
-    put_private(conn, :validated_version, verified)
+    case Enum.member?(opts[:versions], version) do
+      false -> put_private(conn, :validated_version, :error)
+      true  -> put_private(conn, :validated_version, version)
+    end
   end
 end

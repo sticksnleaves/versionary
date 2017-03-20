@@ -31,13 +31,13 @@ defmodule Versionary.Plug.EnsureVersionTest do
   test "request does not halt if version is verified" do
     conn =
       conn(:get, "/")
-      |> put_private(:validated_version, true)
+      |> put_private(:validated_version, "application/vnd.app.v1+json")
       |> EnsureVersion.call(@opts)
 
     refute conn.halted
   end
 
-  test "request does not halt of verification has not happened" do
+  test "request does not halt if verification has not happened" do
     conn =
       conn(:get, "/")
       |> EnsureVersion.call(@opts)
@@ -54,7 +54,7 @@ defmodule Versionary.Plug.EnsureVersionTest do
   test "request does halt if version is not verified" do
     conn =
       conn(:get, "/")
-      |> put_private(:validated_version, false)
+      |> put_private(:validated_version, :error)
       |> EnsureVersion.call(@opts)
 
     assert conn.halted
@@ -63,7 +63,7 @@ defmodule Versionary.Plug.EnsureVersionTest do
   test "handler is called when version is not verified" do
     conn =
       conn(:get, "/")
-      |> put_private(:validated_version, false)
+      |> put_private(:validated_version, :error)
       |> EnsureVersion.call(@opts)
 
     assert conn.assigns[:versionary_spec] == :not_supported

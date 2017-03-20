@@ -31,12 +31,12 @@ defmodule Versionary.Plug.EnsureVersion do
   @doc false
   def call(conn, opts) do
     case conn.private[:validated_version] do
-      true ->
-        conn
-      false ->
+      :error ->
         handle_error(conn, opts)
       nil ->
         Logger.warn("Version has not been verified. Make sure Versionary.Plug.VerifyHeader has been called.")
+        conn
+      _ ->
         conn
     end
   end
