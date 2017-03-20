@@ -14,7 +14,7 @@ defmodule Versionary.Plug.Handler do
   before calling a handler. Once a handler processes the error the plug request
   lifecycle will finish.
 
-  ## Eample
+  ## Example
 
   ```
   defmodule MyAPI.MyErrorHandler do
