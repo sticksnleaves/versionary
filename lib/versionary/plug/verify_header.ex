@@ -38,7 +38,7 @@ defmodule Versionary.Plug.VerifyHeader do
   @doc false
   def call(conn, opts) do
     conn
-    |> verify_version(opts)
+    |> validate_version(opts)
   end
 
   # private
@@ -50,10 +50,10 @@ defmodule Versionary.Plug.VerifyHeader do
     end
   end
 
-  defp verify_version(conn, opts) do
+  defp validate_version(conn, opts) do
     version = get_version(conn, opts)
     verified = Enum.member?(opts[:versions], version)
 
-    put_private(conn, :version_verified, verified)
+    put_private(conn, :validated_version, verified)
   end
 end

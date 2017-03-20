@@ -30,7 +30,7 @@ defmodule Versionary.Plug.EnsureVersion do
 
   @doc false
   def call(conn, opts) do
-    case conn.private[:version_verified] do
+    case conn.private[:validated_version] do
       true ->
         conn
       false ->
