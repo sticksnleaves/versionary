@@ -21,7 +21,7 @@ defmodule Versionary.Plug.EnsureVersion do
   If necessary you can tell the handler to only process the request for a
   specific version. If, for example, version 1 of your API has been
   decomissioned you may want to provide an error that is specific to that
-  version of the API.
+  version.
 
   ### Example
 
