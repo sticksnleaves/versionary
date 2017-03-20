@@ -108,7 +108,7 @@ defmodule Versionary.Plug.EnsureVersionTest do
       assert conn.assigns[:versionary_spec] == :test_handler_1
     end
 
-    test "handle is called for a specific version" do
+    test "handler is called for a specific version" do
       conn =
         conn(:get, "/")
         |> Plug.Conn.put_req_header("accept", @v2)
