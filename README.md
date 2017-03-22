@@ -18,6 +18,8 @@ end
 
 ## Usage
 
+### Validation
+
 ```elixir
 def MyAPI.MyController do
   use MyAPI.Web, :controller
@@ -25,6 +27,19 @@ def MyAPI.MyController do
   plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
 
   plug Versionary.Plug.EnsureVersion, handler: MyAPI.MyErrorHandler
+end
+```
+
+### Routing
+
+```elixir
+def MyAPI.Router do
+  use MyAPI.Web, :router
+
+  plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
+
+  plug Versionary.Plug.Forward, to: MyAPI.Router.V1,
+                                versions: ["application/vnd.app.v1+json"]
 end
 ```
 
@@ -58,3 +73,17 @@ handler will be called to process the request.
 
 Behaviour for handling requests with invalid versions. You can create your own
 custom handler with this behaviour.
+
+### [Versionary.Plug.Forward](https://hexdocs.pm/versionary/Versionary.Plug.Forward.html)
+
+Checks to see if the request has been flagged with a valid version. If the
+version is valid, the request will be forwarded to the plug provided.
+
+#### Options
+
+`to` - the plug to forward the request to
+
+`versions` - a list of strings representing versions that should be forwarded to
+the plug provided
+
+`options` - a list of options to be passed to the forwarded plug
