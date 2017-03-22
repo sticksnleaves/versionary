@@ -16,7 +16,7 @@ defmodule Versionary.Plug.EnsureVersion do
   plug Versionary.Plug.EnsureVersion, handler: SomeModule
   ```
 
-  ## Handling specific versions
+  ## Handling Specific Versions
 
   If necessary you can tell the handler to only process the request for a
   specific version. If, for example, version 1 of your API has been
@@ -34,6 +34,8 @@ defmodule Versionary.Plug.EnsureVersion do
 
   The above example would halt and then handle the request by displaying a
   message informing the user that version 1 of the API has been decomissioned.
+
+  ## Default Handler
 
   As a rule of thumb, you should always provide a default handler. A default
   handler will process requests when no version or an unrecognized version
