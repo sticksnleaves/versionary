@@ -40,10 +40,13 @@ defmodule Versionary.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:plug, "~> 1.3"},
-     # dev
-     {:ex_doc, ">= 0.0.0", only: :dev},
-     # test
-     {:excoveralls, "~> 0.6.0", only: :test, runtime: false}]
+      # dev
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      # test
+      {:excoveralls, "~> 0.6.0", only: :test, runtime: false},
+      # dev, test
+      {:credo, "~> 0.7", only: [:dev, :test]}
+    ]
   end
 
   defp package do

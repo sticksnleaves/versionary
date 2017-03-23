@@ -26,7 +26,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
   test "verification fails if version is not present" do
     conn = conn(:get, "/") |> VerifyHeader.call(@opts1)
 
-    assert conn.private[:version_verified] == false
+    assert conn.private[:validated_version] == {nil, :error}
   end
 
   test "verification fails if version is incorrect" do
@@ -35,7 +35,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("accept", @v2)
       |> VerifyHeader.call(@opts1)
 
-    assert conn.private[:version_verified] == false
+    assert conn.private[:validated_version] == {@v2, :error}
   end
 
   test "verification fails if header is incorrect" do
@@ -44,7 +44,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("accept", @v1)
       |> VerifyHeader.call(@opts2)
 
-    assert conn.private[:version_verified] == false
+    assert conn.private[:validated_version] == {nil, :error}
   end
 
   test "verification succeeds if version matches" do
@@ -53,7 +53,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("accept", @v1)
       |> VerifyHeader.call(@opts1)
 
-      assert conn.private[:version_verified] == true
+      assert conn.private[:validated_version] == {@v1, :ok}
   end
 
   test "verification succeeds if header and version match" do
@@ -62,7 +62,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("x-version", @v1)
       |> VerifyHeader.call(@opts2)
 
-      assert conn.private[:version_verified] == true
+      assert conn.private[:validated_version] == {@v1, :ok}
   end
 
   test "verification succeeds if at least one version matches" do
@@ -71,6 +71,6 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("accept", @v1)
       |> VerifyHeader.call(@opts3)
 
-      assert conn.private[:version_verified] == true
+      assert conn.private[:validated_version] == {@v1, :ok}
   end
 end
