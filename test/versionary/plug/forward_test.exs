@@ -102,7 +102,7 @@ defmodule Versionary.Plug.ForwardTest do
       conn(:get, "/")
       |> put_req_header("accept", @v1)
       |> VerifyHeader.call(VerifyHeader.init([versions: [@v1]]))
-      |> Forward.call(Forward.init([to: TestRouter2, versions: [@v2]]))
+      |> Forward.call(Forward.init([to: TestRouter2, versions: [@v2], options: []]))
 
     assert conn.assigns[:versionary_spec] == nil
   end
