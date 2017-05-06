@@ -2,13 +2,36 @@ defmodule Versionary.Plug.VerifyHeader do
   @moduledoc """
   Use this plug to verify a version string in the header.
 
-  If multiple versions are passed to this plug and at last one matches the
+  ## Example
+
+  ```
+  plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
+  ```
+
+  If multiple versions are passed to this plug and at least one matches the
   version will be considered valid.
 
   ## Example
 
   ```
-  plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
+  plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json",
+                                                "application/vnd.app.v2+json"]
+  ```
+
+  It's also possible to verify versions against configured mime types. If
+  multiple mime types are passed and at least one matches the version will be
+  considered valid.
+
+  ## Example
+
+  ```
+  config :mime, :types, %{
+    "application/vnd.app.v1+json" => [:v1]
+  }
+  ```
+
+  ```
+  plug Versionary.Plug.VerifyHeader, accepts: [:v1]
   ```
 
   By default, this plug will look at the `Accept` header for the version string
@@ -30,8 +53,9 @@ defmodule Versionary.Plug.VerifyHeader do
   @doc false
   def init(opts) do
     %{
+      accepts: opts[:accepts] || [],
       header: opts[:header] || @default_header_opt,
-      versions: opts[:versions]
+      versions: opts[:versions] || []
     }
   end
 
@@ -43,6 +67,15 @@ defmodule Versionary.Plug.VerifyHeader do
 
   # private
 
+  defp get_all_versions(opts) do
+    opts[:versions] ++ get_mime_versions(opts)
+  end
+
+  defp get_mime_versions(%{accepts: accepts}), do: get_mime_versions(accepts)
+  defp get_mime_versions([h|t]), do: [Plug.MIME.type(h)] ++ get_mime_versions(t)
+  defp get_mime_versions([]), do: []
+  defp get_mime_versions(nil), do: []
+
   defp get_version(conn, opts) do
     case get_req_header(conn, opts[:header]) do
       []        -> nil
@@ -51,8 +84,7 @@ defmodule Versionary.Plug.VerifyHeader do
   end
 
   defp verify_version(conn, opts) do
-    version = get_version(conn, opts)
-    verified = Enum.member?(opts[:versions], version)
+    verified = Enum.member?(get_all_versions(opts), get_version(conn, opts))
 
     put_private(conn, :version_verified, verified)
   end

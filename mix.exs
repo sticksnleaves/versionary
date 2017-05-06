@@ -5,7 +5,7 @@ defmodule Versionary.Mixfile do
     [app: :versionary,
      name: "Versionary",
      description: "Elixir plug for handling API versioning",
-     version: "0.1.0",
+     version: "0.2.0",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -39,11 +39,14 @@ defmodule Versionary.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:plug, "~> 1.3"},
-     # dev
-     {:ex_doc, ">= 0.0.0", only: :dev},
-     # test
-     {:excoveralls, "~> 0.6.0", only: :test, runtime: false}]
+    [
+      {:plug, "~> 1.3"},
+      # dev
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      # test
+      {:excoveralls, "~> 0.6.0", only: :test, runtime: false},
+      {:phoenix, ">= 1.2.0 and < 1.4.0", only: :test}
+    ]
   end
 
   defp package do
