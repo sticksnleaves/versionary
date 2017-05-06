@@ -5,10 +5,9 @@ defmodule Versionary.Plug.PhoenixErrorHandlerTest do
   alias Versionary.Plug.PhoenixErrorHandler
 
   test "respond with a status of 406" do
-    conn =
+    assert_raise(Phoenix.NotAcceptableError, fn() ->
       conn(:get, "/")
       |> PhoenixErrorHandler.call
-
-    assert_raise Phoenix.NotAcceptableError
+    end)
   end
 end

@@ -8,7 +8,7 @@ defmodule Versionary.Plug.PhoenixErrorHandler do
 
   @behaviour Versionary.Plug.Handler
 
-  def call(conn) do
+  def call(_conn) do
     verify_phoenix_dep()
 
     raise Phoenix.NotAcceptableError,
