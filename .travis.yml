@@ -20,7 +20,7 @@ before_script:
   - travis_wait mix dialyzer --plt
 script:
   - mix coveralls.travis
-  - mix dialyzer
+  - mix dialyzer --halt-exit-status
 matrix:
   exclude:
     - elixir: 1.4.5
