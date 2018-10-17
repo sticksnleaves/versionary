@@ -19,34 +19,32 @@ end
 ## Usage
 
 ```elixir
-def MyAPI.MyController do
-  use MyAPI.Web, :controller
+def MyAPI.Router do
+  use Plug.Router
 
   plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
 
   plug Versionary.Plug.EnsureVersion, handler: MyAPI.MyErrorHandler
+
+  plug :match
+  plug :dispatch
 end
 ```
 
 ## MIME Support
 
-Versionary can verify versions against media types configured within the
-application by using `Versionary.Plug.VerifyHeader`'s `:accepts` option.
+It's possible to verify versions against configured MIME types. If multiple MIME
+types are passed and at least one matches the version will be considered valid.
 
-```elixir
+```
 config :mime, :types, %{
-  "application/vnd.app.v1+json" => [:v1]
+  "application/vnd.app.v1+json" => [:v1],
+  "application/vnd.app.v2+json" => [:v2]
 }
 ```
 
-```elixir
-def MyAPI.MyController do
-  use MyAPI.Web, :controller
-
-  plug Versionary.Plug.VerifyHeader, accepts: [:v1]
-
-  plug Versionary.Plug.EnsureVersion, handler: MyAPI.MyErrorHandler
-end
+```
+plug Versionary.Plug.VerifyHeader, accepts: [:v1, :v2]
 ```
 
 Please note that whenever you change media type configurations you must
@@ -54,7 +52,16 @@ recompile the `mime` library.
 
 To force `mime` to recompile run `mix deps.clean --build mime`.
 
-## Usage with Phoenix
+## Identifying Versions
+
+When a version has been verified `:version` and `:raw_version` private keys will
+be added to the conn. These keys will contain version that has been verified.
+
+The `:version` key may contain either the string version provided by the
+request or, if configured, the MIME extension. The `:raw_version` key will
+always contain the string version provided by the request.
+
+## Phoenix
 
 Versionary is just a plug. That means Versionary works with Phoenix out of the
 box. However, if you'd like Versionary to render a Phoenix error view when
@@ -65,7 +72,7 @@ defmodule MyAPI.Router do
   use MyAPI.Web, :router
 
   pipeline :api do
-    plug Versionary.Plug.VerifyHeader, accepts: [:v1]
+    plug Versionary.Plug.VerifyHeader, accepts: [:v1, :v2]
 
     plug Versionary.Plug.EnsureVersion, handler: Versionary.Plug.PhoenixErrorHandler
   end
@@ -75,7 +82,25 @@ defmodule MyAPI.Router do
 
     get "/my_controllers", MyController, :index
   end
+end
+```
 
+### Handling Multiple Versions
+
+You can pattern match which version of a controller action to run based on the
+`:version` (or `:raw_version`) private key provided by the conn.
+
+```elixir
+defmodule MyAPI.MyController do
+  use MyAPI, :controller
+
+  def index(%{private: %{version: [:v1]}} = conn, _params) do
+    render(conn, "index.v1.json", %{})
+  end
+
+  def index(%{private: %{version: [:v2]}} = conn, _params) do
+    render(conn, "index.v2.json", %{})
+  end
 end
 ```
 
@@ -86,7 +111,9 @@ end
 Verify that the version passed in to the request as a header is valid. If the
 version is not valid then the request will be flagged.
 
-This plug will not handle an invalid version.
+This plug will not handle an invalid version. If you would like to halt the
+request and handle an invalid version please see
+[`Versionary.Plug.EnsureVersion`](https://hexdocs.pm/versionary/Versionary.Plug.EnsureVersion.html).
 
 #### Options
 
@@ -114,20 +141,3 @@ handler will be called to process the request.
 
 Behaviour for handling requests with invalid versions. You can create your own
 custom handler with this behaviour.
-
-# Development
-
-## Run tests
-
-Before running the test make sure all dependencies are installed, to do that just
-run the following command
-
-```bash
-$ mix deps.get
-```
-
-Then to run the test run this command
-
-```bash
-$ mix tests
-```
