@@ -75,6 +75,7 @@ defmodule MyAPI.Router do
 
     get "/my_controllers", MyController, :index
   end
+
 end
 ```
 
@@ -113,3 +114,20 @@ handler will be called to process the request.
 
 Behaviour for handling requests with invalid versions. You can create your own
 custom handler with this behaviour.
+
+# Development
+
+## Run tests
+
+Before running the test make sure all dependencies are installed, to do that just
+run the following command
+
+```bash
+$ mix deps.get
+```
+
+Then to run the test run this command
+
+```bash
+$ mix tests
+```

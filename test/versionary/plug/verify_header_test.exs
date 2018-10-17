@@ -57,6 +57,24 @@ defmodule Versionary.Plug.VerifyHeaderTest do
     assert conn.private[:version_verified] == false
   end
 
+  test "does not store version if verification fails" do
+    conn =
+      conn(:get, "/")
+      |> put_req_header("accept", @v1)
+      |> VerifyHeader.call(@opts2)
+
+    assert conn.private[:version] == nil
+  end
+
+  test "does not store raw version if verification fails" do
+    conn =
+      conn(:get, "/")
+      |> put_req_header("accept", @v1)
+      |> VerifyHeader.call(@opts2)
+
+    assert conn.private[:raw_version] == nil
+  end
+
   test "verification succeeds if version matches" do
     conn =
       conn(:get, "/")
@@ -82,6 +100,24 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> VerifyHeader.call(@opts3)
 
       assert conn.private[:version_verified] == true
+  end
+
+  test "store used version if verification succeeds" do
+    conn =
+      conn(:get, "/")
+      |> put_req_header("accept", @v1)
+      |> VerifyHeader.call(@opts3)
+
+    assert conn.private[:version] == [:v1]
+  end
+
+  test "store used raw version if verification succeeds" do
+    conn =
+      conn(:get, "/")
+      |> put_req_header("accept", @v1)
+      |> VerifyHeader.call(@opts3)
+
+    assert conn.private[:raw_version] == @v1
   end
 
   test "verification succeeds if at least one mime matches" do

@@ -63,6 +63,7 @@ defmodule Versionary.Plug.VerifyHeader do
   def call(conn, opts) do
     conn
     |> verify_version(opts)
+    |> store_version(opts)
   end
 
   # private
@@ -72,7 +73,7 @@ defmodule Versionary.Plug.VerifyHeader do
   end
 
   defp get_mime_versions(%{accepts: accepts}), do: get_mime_versions(accepts)
-  defp get_mime_versions([h|t]), do: [Plug.MIME.type(h)] ++ get_mime_versions(t)
+  defp get_mime_versions([h|t]), do: [MIME.type(h)] ++ get_mime_versions(t)
   defp get_mime_versions([]), do: []
   defp get_mime_versions(nil), do: []
 
@@ -86,6 +87,23 @@ defmodule Versionary.Plug.VerifyHeader do
   defp verify_version(conn, opts) do
     verified = Enum.member?(get_all_versions(opts), get_version(conn, opts))
 
-    put_private(conn, :version_verified, verified)
+    conn
+    |> put_private(:version_verified, verified)
   end
+
+  defp store_version(conn, opts) do
+    raw_version = get_version(conn, opts)
+
+    do_store_version(conn, raw_version)
+  end
+
+  defp do_store_version(conn, nil), do: conn
+  defp do_store_version(conn, raw_version) do
+    version = MIME.extensions(raw_version)
+
+    conn
+    |> put_private(:version, version)
+    |> put_private(:raw_version, raw_version)
+  end
+
 end
