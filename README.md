@@ -56,6 +56,8 @@ To force `mime` to recompile run `mix deps.clean --build mime`.
 
 ## Usage with Phoenix
 
+### Simple example
+
 Versionary is just a plug. That means Versionary works with Phoenix out of the
 box. However, if you'd like Versionary to render a Phoenix error view when
 verification fails use `Versionary.Plug.PhoenixErrorHandler`.
@@ -70,7 +72,7 @@ defmodule MyAPI.Router do
     plug Versionary.Plug.EnsureVersion, handler: Versionary.Plug.PhoenixErrorHandler
   end
 
-  scope "/", MyAPI do
+  scope "/api", MyAPI do
     pipe_through :api
 
     get "/my_controllers", MyController, :index
@@ -78,6 +80,69 @@ defmodule MyAPI.Router do
 
 end
 ```
+
+### Multiple API versions
+
+All the version that are going to be used needs to be defined in the file
+*config/config.exs*
+
+```
+# Previous code
+
+config :mime, :types, %{
+  "application/vnd.api.v1+json" => [:v1],
+  "application/vnd.api.v2+json" => [:v2],
+}
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env}.exs"
+```
+
+In this example **api** is the name of your application.
+
+Then in the routes the pipeline that is going to be used for the api needs to
+include both api mime types.
+
+```elixir
+defmodule MyAPI.Router do
+  use MyAPI.Web, :router
+
+  pipeline :api do
+    plug Versionary.Plug.VerifyHeader, accepts: [:v1, :v2]
+
+    plug Versionary.Plug.EnsureVersion, handler: Versionary.Plug.PhoenixErrorHandler
+  end
+
+  scope "/api", MyAPI do
+    pipe_through :api
+
+    get "/my_controllers", MyController, :index
+  end
+
+end
+```
+
+Finally in the controller a way to differenciate between both versions needs to
+be defined, see the following example
+
+```elixir
+defmodule MyAPI.MyController do
+  use MyAPI, :controller
+
+  def index(%{private: %{version: [:v1]}} = conn, _params) do
+    conn
+    |> render("index.v1.json", %{})
+  end
+
+  def index(%{private: %{version: [:v2]}} = conn, _params) do
+    conn
+    |> render("index.v2.json", %{})
+  end
+end
+```
+
+Then just define methods to support both versions on the view.
 
 ## Plug API
 
