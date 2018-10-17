@@ -12,9 +12,14 @@ defmodule Versionary.Plug.VerifyHeader do
 
   ## Options
 
-  * `:versions` - a list of version strings to check against
-  * `:accepts` - a list of MIME types to check against
-  * `:header` - request header containing the version (default: `accept`)
+  * `:versions` - a list of strings representing valid versions. If at least one
+                  of the provided versions is valid then the request is
+                  considered valid.
+  * `:accepts` - a list of strings or atoms representing versions registered as
+                 MIME types. If at least one of the registered versions is valid
+                 then the request is considered valid.
+  * `:header` - the header used to provide the requested version (Default:
+                `Accept`)
 
   ## Usage
 
@@ -48,7 +53,12 @@ defmodule Versionary.Plug.VerifyHeader do
   plug Versionary.Plug.VerifyHeader, accepts: [:v1]
   ```
 
-  ## Identifying Verions
+  Please note that whenever you change media type configurations you must
+  recompile the `mime` library.
+
+  To force `mime` to recompile run `mix deps.clean --build mime`.
+
+  ## Identifying Versions
 
   When a version has been verified this plug will add `:version` and
   `:raw_version` private keys to the conn. These keys will contain version that
