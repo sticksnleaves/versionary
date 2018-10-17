@@ -2,27 +2,41 @@ defmodule Versionary.Plug.VerifyHeader do
   @moduledoc """
   Use this plug to verify a version string in the header.
 
-  ## Example
+  This plug will add a `:version_verified` private key to the conn. This value
+  will be `true` if the version has been verified. Otherwise, it will be
+  `false`.
+
+  Note that this plug will only flag the conn as having a valid or invalid
+  version. If you would like to halt the request and handle an invalid version
+  please see `Versionary.Plug.EnsureVersion`.
+
+  ## Options
+
+  * `:versions` - a list of version strings to check against
+  * `:accepts` - a list of MIME types to check against
+  * `:header` - request header containing the version (default: `accept`)
+
+  ## Usage
 
   ```
   plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
   ```
 
-  If multiple versions are passed to this plug and at least one matches the
-  version will be considered valid.
+  ## Multiple Versions
 
-  ## Example
+  You may pass multiple version strings to the `:versions` option. If at least
+  one version matches the request will be considered valid.
 
   ```
   plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json",
                                                 "application/vnd.app.v2+json"]
   ```
 
-  It's also possible to verify versions against configured mime types. If
-  multiple mime types are passed and at least one matches the version will be
-  considered valid.
+  ## MIME Support
 
-  ## Example
+  It's also possible to verify versions against configured MIME types. If
+  multiple MIME types are passed and at least one matches the version will be
+  considered valid.
 
   ```
   config :mime, :types, %{
@@ -34,16 +48,15 @@ defmodule Versionary.Plug.VerifyHeader do
   plug Versionary.Plug.VerifyHeader, accepts: [:v1]
   ```
 
-  By default, this plug will look at the `Accept` header for the version string
-  to verify against. If you'd like to verify against another header specify the
-  header you'd like to verify against in the `header` option.
+  ## Identifying Verions
 
-  ## Example
+  When a version has been verified this plug will add `:version` and
+  `:raw_version` private keys to the conn. These keys will contain version that
+  has been verified.
 
-  ```
-  plug Versionary.Plug.VerifyHeader, header: "accept",
-                                     versions: ["application/vnd.app.v1+json"]
-  ```
+  The `:version` key may contain either the string version provided by the
+  request or, if configured, the MIME extension. The `:raw_version` key will
+  always contain the string version provided by the request.
   """
 
   import Plug.Conn
@@ -53,9 +66,9 @@ defmodule Versionary.Plug.VerifyHeader do
   @doc false
   def init(opts) do
     %{
-      accepts: opts[:accepts] || [],
-      header: opts[:header] || @default_header_opt,
-      versions: opts[:versions] || []
+      accepts: Keyword.get(opts, :accepts, []),
+      header: Keyword.get(opts, :header, @default_header_opt),
+      versions: Keyword.get(opts, :versions, [])
     }
   end
 
@@ -63,47 +76,52 @@ defmodule Versionary.Plug.VerifyHeader do
   def call(conn, opts) do
     conn
     |> verify_version(opts)
-    |> store_version(opts)
+    |> put_version(opts)
   end
 
+  #
   # private
-
-  defp get_all_versions(opts) do
-    opts[:versions] ++ get_mime_versions(opts)
-  end
-
-  defp get_mime_versions(%{accepts: accepts}), do: get_mime_versions(accepts)
-  defp get_mime_versions([h|t]), do: [MIME.type(h)] ++ get_mime_versions(t)
-  defp get_mime_versions([]), do: []
-  defp get_mime_versions(nil), do: []
-
-  defp get_version(conn, opts) do
-    case get_req_header(conn, opts[:header]) do
-      []        -> nil
-      [version] -> version
-    end
-  end
+  #
 
   defp verify_version(conn, opts) do
-    verified = Enum.member?(get_all_versions(opts), get_version(conn, opts))
+    verified = Enum.member?(get_valid_versions(opts), get_req_version(conn, opts))
 
-    conn
-    |> put_private(:version_verified, verified)
+    put_private(conn, :version_verified, verified)
   end
 
-  defp store_version(conn, opts) do
-    raw_version = get_version(conn, opts)
+  defp put_version(%{private: %{version_verified: true}} = conn, opts) do
+    raw_version = get_req_version(conn, opts)
 
-    do_store_version(conn, raw_version)
-  end
-
-  defp do_store_version(conn, nil), do: conn
-  defp do_store_version(conn, raw_version) do
-    version = MIME.extensions(raw_version)
+    version = Map.get(MIME.compiled_custom_types(), raw_version, raw_version)
 
     conn
     |> put_private(:version, version)
     |> put_private(:raw_version, raw_version)
   end
 
+  defp put_version(conn, _opts) do
+    conn
+  end
+
+  #
+  # helpers
+  #
+
+  defp get_valid_versions(opts) do
+    opts[:versions] ++ get_mime_versions(opts)
+  end
+
+  defp get_mime_versions(%{accepts: accepts}), do: do_get_mime_versions(accepts)
+  defp get_mime_versions(_opts), do: []
+
+  defp do_get_mime_versions([h|t]), do: [MIME.type(h)] ++ get_mime_versions(t)
+  defp do_get_mime_versions([]), do: []
+  defp do_get_mime_versions(nil), do: []
+
+  defp get_req_version(conn, opts) do
+    case get_req_header(conn, opts[:header]) do
+      []        -> nil
+      [version] -> version
+    end
+  end
 end
