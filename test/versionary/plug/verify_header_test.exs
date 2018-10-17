@@ -25,7 +25,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
   end
 
   test "verification fails if version is not present" do
-    conn = conn(:get, "/") |> VerifyHeader.call(@opts1)
+    conn =  VerifyHeader.call(conn(:get, "/"), @opts1)
 
     assert conn.private[:version_verified] == false
   end
