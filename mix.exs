@@ -12,7 +12,7 @@ defmodule Versionary.Mixfile do
      deps: deps(),
      package: package(),
      preferred_cli_env: [
-       "coveralls": :test,
+       coveralls: :test,
        "coveralls.detail": :test,
        "coveralls.html": :test,
        "coveralls.post": :test,
@@ -27,6 +27,7 @@ defmodule Versionary.Mixfile do
 
   defp deps do
     [
+      {:mime, "~> 1.3"},
       {:plug, "~> 1.3"},
       # dev
       {:ex_doc, ">= 0.0.0", only: :dev},
