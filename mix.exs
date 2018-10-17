@@ -10,7 +10,7 @@ defmodule Versionary.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps(),
-     dialyzer: [plt_add_apps: [:mime, :plug]],
+     dialyzer: [plt_add_apps: [:mime, :phoenix, :plug]],
      package: package(),
      preferred_cli_env: [
        coveralls: :test,
