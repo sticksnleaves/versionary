@@ -6,6 +6,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
 
   @v1 "application/vnd.app.v1+json"
   @v2 "application/vnd.app.v2+json"
+  @v3 "application/vnd.app.v3+json"
 
   @opts1 VerifyHeader.init(versions: [@v1])
   @opts2 VerifyHeader.init(header: "x-version", versions: [@v1])
@@ -42,7 +43,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
   test "verification fails if mime is incorrect" do
     conn =
       conn(:get, "/")
-      |> put_req_header("accept", @v2)
+      |> put_req_header("accept", @v3)
       |> VerifyHeader.call(@opts4)
 
     assert conn.private[:version_verified] == false
