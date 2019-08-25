@@ -124,13 +124,13 @@ defmodule Versionary.Plug.VerifyHeader do
   defp get_mime_versions(%{accepts: accepts}), do: do_get_mime_versions(accepts)
   defp get_mime_versions(_opts), do: []
 
-  defp do_get_mime_versions([h|t]), do: [MIME.type(h)] ++ get_mime_versions(t)
+  defp do_get_mime_versions([h | t]), do: [MIME.type(h)] ++ do_get_mime_versions(t)
   defp do_get_mime_versions([]), do: []
   defp do_get_mime_versions(nil), do: []
 
   defp get_req_version(conn, opts) do
     case get_req_header(conn, opts[:header]) do
-      []        -> nil
+      [] -> nil
       [version] -> version
     end
   end

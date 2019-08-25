@@ -7,10 +7,10 @@ defmodule Versionary.Plug.VerifyHeaderTest do
   @v1 "application/vnd.app.v1+json"
   @v2 "application/vnd.app.v2+json"
 
-  @opts1 VerifyHeader.init([versions: [@v1]])
-  @opts2 VerifyHeader.init([header: "x-version", versions: [@v1]])
-  @opts3 VerifyHeader.init([versions: [@v1, @v2]])
-  @opts4 VerifyHeader.init([accepts: [:v1]])
+  @opts1 VerifyHeader.init(versions: [@v1])
+  @opts2 VerifyHeader.init(header: "x-version", versions: [@v1])
+  @opts3 VerifyHeader.init(versions: [@v1, @v2])
+  @opts4 VerifyHeader.init(accepts: [:v1, :v2])
 
   test "init/1 sets the header option to the value passed in" do
     assert @opts2[:header] == "x-version"
@@ -25,7 +25,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
   end
 
   test "verification fails if version is not present" do
-    conn =  VerifyHeader.call(conn(:get, "/"), @opts1)
+    conn = VerifyHeader.call(conn(:get, "/"), @opts1)
 
     assert conn.private[:version_verified] == false
   end
@@ -81,7 +81,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("accept", @v1)
       |> VerifyHeader.call(@opts1)
 
-      assert conn.private[:version_verified] == true
+    assert conn.private[:version_verified] == true
   end
 
   test "verification succeeds if header and version match" do
@@ -90,7 +90,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("x-version", @v1)
       |> VerifyHeader.call(@opts2)
 
-      assert conn.private[:version_verified] == true
+    assert conn.private[:version_verified] == true
   end
 
   test "verification succeeds if at least one version matches" do
@@ -99,7 +99,7 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("accept", @v1)
       |> VerifyHeader.call(@opts3)
 
-      assert conn.private[:version_verified] == true
+    assert conn.private[:version_verified] == true
   end
 
   test "store used version if verification succeeds" do
@@ -126,6 +126,15 @@ defmodule Versionary.Plug.VerifyHeaderTest do
       |> put_req_header("accept", @v1)
       |> VerifyHeader.call(@opts4)
 
-      assert conn.private[:version_verified] == true
+    assert conn.private[:version_verified] == true
+  end
+
+  test "verification succeeds if at least one mime matches, accept header v2" do
+    conn =
+      conn(:get, "/")
+      |> put_req_header("accept", @v2)
+      |> VerifyHeader.call(@opts4)
+
+    assert conn.private[:version_verified] == true
   end
 end
