@@ -10,7 +10,6 @@ defmodule Versionary.Plug.ErrorHandler do
 
   import Plug.Conn
 
-  @doc false
   def call(conn) do
     conn
     |> send_resp(406, "Not Acceptable")
