@@ -12,7 +12,7 @@ jobs:
   include:
     - elixir: '1.4'
       otp_release: '20.3'
-      script: mixt test
+      script: mix test
       stage: test
     - elixir: '1.5'
       otp_release: '20.3'
