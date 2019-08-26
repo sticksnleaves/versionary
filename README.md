@@ -12,7 +12,7 @@ in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:versionary, "~> 0.3.0"}]
+  [{:versionary, "~> 0.3"}]
 end
 ```
 
