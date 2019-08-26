@@ -3,5 +3,6 @@
 use Mix.Config
 
 config :mime, :types, %{
-  "application/vnd.app.v1+json" => [:v1]
+  "application/vnd.app.v1+json" => [:v1],
+  "application/vnd.app.v2+json" => [:v2]
 }
