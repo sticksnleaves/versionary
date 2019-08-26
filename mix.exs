@@ -33,8 +33,8 @@ defmodule Versionary.Mixfile do
       # dev
       {:ex_doc, ">= 0.0.0", only: :dev},
       # test
-      {:excoveralls, "~> 0.6.0", only: :test, runtime: false},
-      {:phoenix, ">= 1.2.0", only: :test},
+      {:excoveralls, "~> 0.11", only: :test, runtime: false},
+      {:phoenix,     ">= 1.2.0", only: :test},
       # dev/test
       {:dialyxir, "~> 1.0.0-rc", only: [:dev, :test], runtime: false}
     ]
