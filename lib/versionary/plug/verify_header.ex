@@ -136,6 +136,7 @@ defmodule Versionary.Plug.VerifyHeader do
   defp get_req_version(headers, opts) when is_binary(headers) do
     String.split(headers, ",")
     |> Enum.map(&String.split(&1, ";") |> hd)
+    |> Enum.map(&String.trim/1)
     |> get_req_version(opts)
   end
   defp get_req_version([head | tail], opts) do
