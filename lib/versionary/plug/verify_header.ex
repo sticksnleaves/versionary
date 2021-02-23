@@ -95,13 +95,11 @@ defmodule Versionary.Plug.VerifyHeader do
 
   defp verify_version(conn, opts) do
     verified = Enum.member?(get_valid_versions(opts), get_req_version(conn, opts))
-
     put_private(conn, :version_verified, verified)
   end
 
   defp put_version(%{private: %{version_verified: true}} = conn, opts) do
     raw_version = get_req_version(conn, opts)
-
     version = Map.get(MIME.compiled_custom_types(), raw_version, raw_version)
 
     conn
@@ -128,10 +126,22 @@ defmodule Versionary.Plug.VerifyHeader do
   defp do_get_mime_versions([]), do: []
   defp do_get_mime_versions(nil), do: []
 
-  defp get_req_version(conn, opts) do
-    case get_req_header(conn, opts[:header]) do
-      [] -> nil
-      [version] -> version
+  defp get_req_version(%Plug.Conn{} = conn, %{header: header} = opts) do
+    get_req_header(conn, header)
+    |> List.first()
+    |> get_req_version(opts)
+  end
+  defp get_req_version([], _opts), do: false
+  defp get_req_version(nil, _opts), do: nil
+  defp get_req_version(headers, opts) when is_binary(headers) do
+    String.split(headers, ",")
+    |> Enum.map(&String.split(&1, ";") |> hd)
+    |> get_req_version(opts)
+  end
+  defp get_req_version([head | tail], opts) do
+    case Enum.member?(get_valid_versions(opts), head) do
+      true  -> head
+      false -> get_req_version(tail, opts)
     end
   end
 end
