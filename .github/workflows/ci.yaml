@@ -33,32 +33,32 @@ jobs:
 
                 otp: [22.x, 23.x]
 
-  test:
-      runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
 
-      steps:
-          - uses: actions/checkout@v2
+        steps:
+            - uses: actions/checkout@v2
 
-          - uses: actions/cache@v2
+            - uses: actions/cache@v2
 
-            with:
-                key: ${{ github.job }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ hashFiles('mix.lock') }}-0
+              with:
+                  key: ${{ github.job }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ hashFiles('mix.lock') }}-0
 
-                path: _build
+                  path: _build
 
-          - uses: actions/setup-elixir@v1
+            - uses: actions/setup-elixir@v1
 
-            with:
-                elixir-version: ${{ matrix.elixir }}
+              with:
+                  elixir-version: ${{ matrix.elixir }}
 
-                otp-version: ${{ matrix.otp }}
+                  otp-version: ${{ matrix.otp }}
 
-          - run: mix deps.get
+            - run: mix deps.get
 
-          - run: mix test
+            - run: mix test
 
-      strategy:
-          matrix:
-              elixir: [1.9.x, 1.10.x, 1.11.x]
+        strategy:
+            matrix:
+                elixir: [1.9.x, 1.10.x, 1.11.x]
 
-              otp: [22.x, 23.x]
+                otp: [22.x, 23.x]
