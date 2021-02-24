@@ -4,9 +4,10 @@ defmodule Versionary.Plug.VerifyHeaderTest do
 
   alias Versionary.Plug.VerifyHeader
 
-  @v1 "application/vnd.app.v1+json"
-  @v2 "application/vnd.app.v2+json"
-  @v3 "application/vnd.app.v3+json"
+  @v1    "application/vnd.app.v1+json"
+  @v2    "application/vnd.app.v2+json"
+  @v3    "application/vnd.app.v3+json"
+  @mixed "application/vnd.app.v1+json,application/json;q=0.9"
 
   @opts1 VerifyHeader.init(versions: [@v1])
   @opts2 VerifyHeader.init(header: "x-version", versions: [@v1])
@@ -138,4 +139,23 @@ defmodule Versionary.Plug.VerifyHeaderTest do
 
     assert conn.private[:version_verified] == true
   end
+
+  test "verification succeeds when using mixed accept headers, and at least one mime matches" do
+    conn =
+      conn(:get, "/")
+      |> put_req_header("accept", @mixed)
+      |> VerifyHeader.call(@opts4)
+
+    assert conn.private[:version_verified] == true
+  end
+
+  test "verification succeeds when using mixed x-version headers, and at least one mime matches" do
+    conn =
+      conn(:get, "/")
+      |> put_req_header("x-version", @mixed)
+      |> VerifyHeader.call(@opts2)
+
+    assert conn.private[:version_verified] == true
+  end
+
 end
