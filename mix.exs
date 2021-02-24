@@ -36,7 +36,7 @@ defmodule Versionary.Mixfile do
       {:excoveralls, "~> 0.11", only: :test, runtime: false},
       {:phoenix,     ">= 1.2.0", only: :test},
       # dev/test
-      {:dialyxir, "~> 1.0.0-rc", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
