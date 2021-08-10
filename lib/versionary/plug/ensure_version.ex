@@ -4,7 +4,7 @@ defmodule Versionary.Plug.EnsureVersion do
   on the request.
 
   If the version provided is not valid then the request will be halted and the
-  module provied to `handler` will be called. From there the handler can decide
+  module provided to `handler` will be called. From there the handler can decide
   how to finish the request.
 
   If a handler isn't provided `Versionary.Plug.ErrorHandler.call/1` will be used
@@ -12,9 +12,10 @@ defmodule Versionary.Plug.EnsureVersion do
 
   ## Example
 
-  ```
+  ```elixir
   plug Versionary.Plug.EnsureVersion, handler: SomeModule
   ```
+
   """
 
   require Logger

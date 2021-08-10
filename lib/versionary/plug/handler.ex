@@ -16,7 +16,7 @@ defmodule Versionary.Plug.Handler do
 
   ## Example
 
-  ```
+  ```elixir
   defmodule MyAPI.MyErrorHandler do
     @behaviour Versionary.Plug.Handler
 
