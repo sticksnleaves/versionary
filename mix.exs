@@ -28,7 +28,7 @@ defmodule Versionary.Mixfile do
 
   defp deps do
     [
-      {:mime, "~> 1.3"},
+      {:mime, "~> 2.0"},
       {:plug, "~> 1.3"},
       # dev
       {:ex_doc, ">= 0.0.0", only: :dev},
