@@ -1,18 +1,26 @@
 # Versionary
 
-Add versioning to your Elixir Plug and Phoenix built API's
+Add versioning to your Elixir Plug and Phoenix built API's.
 
-[![ci](https://github.com/sticksnleaves/versionary/actions/workflows/ci.yaml/badge.svg)](https://github.com/sticksnleaves/versionary/actions/workflows/ci.yaml)
+[![CI](https://github.com/sticksnleaves/versionary/actions/workflows/ci.yaml/badge.svg)](https://github.com/sticksnleaves/versionary/actions/workflows/ci.yaml)
 [![Coverage Status](https://coveralls.io/repos/github/sticksnleaves/versionary/badge.svg?branch=master)](https://coveralls.io/github/sticksnleaves/versionary?branch=master)
+[![Module Version](https://img.shields.io/hexpm/v/versionary.svg)](https://hex.pm/packages/versionary)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/versionary/)
+[![Total Download](https://img.shields.io/hexpm/dt/versionary.svg)](https://hex.pm/packages/versionary)
+[![License](https://img.shields.io/hexpm/l/versionary.svg)](https://github.com/sticksnleaves/versionary/blob/master/LICENSE.md)
+[![Last Updated](https://img.shields.io/github/last-commit/sticksnleaves/versionary.svg)](https://github.com/sticksnleaves/versionary/commits/master)
+
 
 ## Installation
 
-The package can be installed by adding `versionary` to your list of dependencies
+The package can be installed by adding `:versionary` to your list of dependencies
 in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:versionary, "~> 0.3"}]
+  [
+    {:versionary, "~> 0.3"}
+  ]
 end
 ```
 
@@ -36,14 +44,14 @@ end
 It's possible to verify versions against configured MIME types. If multiple MIME
 types are passed and at least one matches the version will be considered valid.
 
-```
+```elixir
 config :mime, :types, %{
   "application/vnd.app.v1+json" => [:v1],
   "application/vnd.app.v2+json" => [:v2]
 }
 ```
 
-```
+```elixir
 plug Versionary.Plug.VerifyHeader, accepts: [:v1, :v2]
 ```
 
@@ -141,3 +149,9 @@ handler will be called to process the request.
 
 Behaviour for handling requests with invalid versions. You can create your own
 custom handler with this behaviour.
+
+# Copyright and License
+
+Copyright (c) 2017 Sticksnleaves
+
+This library is licensed under the [MIT license](./LICENSE.md).

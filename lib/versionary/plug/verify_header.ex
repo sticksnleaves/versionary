@@ -12,27 +12,26 @@ defmodule Versionary.Plug.VerifyHeader do
 
   ## Options
 
-  * `:versions` - a list of strings representing valid versions. If at least one
-                  of the provided versions is valid then the request is
-                  considered valid.
+  * `:versions` - a list of strings representing valid versions. If at least
+    one of the provided versions is valid then the request is considered valid.
+
   * `:accepts` - a list of strings or atoms representing versions registered as
-                 MIME types. If at least one of the registered versions is valid
-                 then the request is considered valid.
+    MIME types. If at least one of the registered versions is valid then the
+    request is considered valid.
+
   * `:header` - the header used to provide the requested version (Default:
-                `Accept`)
+    `Accept`)
 
-  ## Usage
+  ## Example
 
-  ```
-  plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
-  ```
+      plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json"]
 
   ## Multiple Versions
 
   You may pass multiple version strings to the `:versions` option. If at least
   one version matches the request will be considered valid.
 
-  ```
+  ```elixir
   plug Versionary.Plug.VerifyHeader, versions: ["application/vnd.app.v1+json",
                                                 "application/vnd.app.v2+json"]
   ```
@@ -43,13 +42,13 @@ defmodule Versionary.Plug.VerifyHeader do
   multiple MIME types are passed and at least one matches the version will be
   considered valid.
 
-  ```
+  ```elixir
   config :mime, :types, %{
     "application/vnd.app.v1+json" => [:v1]
   }
   ```
 
-  ```
+  ```elixir
   plug Versionary.Plug.VerifyHeader, accepts: [:v1]
   ```
 
