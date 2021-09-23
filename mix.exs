@@ -13,10 +13,10 @@ defmodule Versionary.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      dialyzer: [plt_add_apps: [:mime, :phoenix, :plug]],
       docs: docs(),
       package: package(),
       preferred_cli_env: [
-        dialyzer: [plt_add_apps: [:mime, :phoenix, :plug]],
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.html": :test,
